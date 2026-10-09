@@ -21,3 +21,9 @@
 ## [2026-10-09] lint | 8 issues found, 8 auto-fixed
 
 ## [2026-10-09] lint | 4 issues found, 4 auto-fixed
+
+## [2026-10-09] ingest | git subtree
+- Disposition: New
+- Raw: raw/git/2026-03-25-git-subtree-explained-a-practical-guide-with-examples.md
+
+## [2026-10-09] lint | 0 issues found, 0 auto-fixed
