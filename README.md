@@ -41,12 +41,17 @@ no-flags design never has to be rewritten.
 Requirements: `cc`, `ar`, `make`.
 
 ```sh
-make          # build libftprintf.a at the repo root
+make          # build libft via its Makefile, then libftprintf.a at root
 make bonus    # rebuild including the bonus flag parsing
-make clean    # remove object files
-make fclean   # remove object files and libftprintf.a
+make clean    # remove object files (also inside libft/)
+make fclean   # remove object files, libftprintf.a and libft/libft.a
 make re       # rebuild from scratch
 ```
+
+The top `Makefile` compiles the bundled `libft/` library through its own
+`Makefile` first, then merges it into `libftprintf.a`, so the final archive
+contains both. (To use your own completed libft, copy its sources and
+`Makefile` over `libft/`.)
 
 Compile your program against the library:
 
