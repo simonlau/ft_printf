@@ -1,0 +1,20 @@
+flowchart TD
+    subgraph B["Before — memmove(buf, buf + 4, 3)"]
+        direction LR
+        B0["0: a"] --- B1["1: b"] --- B2["2: c"] --- B3["3: d"] --- B4["4: e"] --- B5["5: f"] --- B6["6: g"] --- B7["7: ∅"]
+    end
+    subgraph A["After — no overlap, any direction"]
+        direction LR
+        A0["0: e"] --- A1["1: f"] --- A2["2: g"] --- A3["3: d"] --- A4["4: e"] --- A5["5: f"] --- A6["6: g"] --- A7["7: ∅"]
+    end
+    B4 --> A0
+    B5 --> A1
+    B6 --> A2
+
+    classDef before fill:#87CEEB,stroke:#333,stroke-width:2px,color:darkblue
+    classDef after fill:#90EE90,stroke:#333,stroke-width:2px,color:darkgreen
+    classDef changed fill:#FFD700,stroke:#333,stroke-width:2px,color:black
+
+    class B0,B1,B2,B3,B4,B5,B6,B7 before
+    class A3,A4,A5,A6,A7 after
+    class A0,A1,A2 changed

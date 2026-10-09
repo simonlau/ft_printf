@@ -1,0 +1,22 @@
+# Done
+
+- ft_isdigit
+- ft_isalpha
+- ft_isalnum
+- ft_isascii
+- ft_isprint
+- ft_strlen
+- ft_toupper
+- ft_tolower
+- ft_memset
+- ft_bzero
+- ft_strchr
+- ft_strrchr
+- ft_memchr
+- ft_memcpy
+- ft_memcmp
+- ft_strncmp
+- ft_memmove
+- ft_strlcpy
+- ft_strlcat
+- ft_strnstr

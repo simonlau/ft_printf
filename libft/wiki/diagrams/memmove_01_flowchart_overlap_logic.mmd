@@ -1,0 +1,17 @@
+flowchart TD
+    Start([⚙️ memmove dest, src, n]) --> Zero{n == 0 or dest == src ?}
+    Zero -->|Yes| Done([✅ Return dest — nothing to do])
+    Zero -->|No| Overlap{dest < src ?}
+    Overlap -->|Yes — dest before src| Forward[Copy forward: first byte → last]
+    Overlap -->|No — dest after src| Backward[Copy backward: last byte → first]
+    Forward --> Copy[Copy n bytes in the chosen direction]
+    Backward --> Copy
+    Copy --> Return([✅ Return dest])
+
+    classDef startEnd fill:#E6E6FA,stroke:#333,stroke-width:2px,color:darkblue
+    classDef process fill:#90EE90,stroke:#333,stroke-width:2px,color:darkgreen
+    classDef decision fill:#FFD700,stroke:#333,stroke-width:2px,color:black
+
+    class Start,Done,Return startEnd
+    class Forward,Backward,Copy process
+    class Zero,Overlap decision
