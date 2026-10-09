@@ -11,3 +11,13 @@
 - Raw: raw/ft_printf/2026-02-16-printf-3-linux-manual-page.md
 
 ## [2026-10-09] lint | 0 issues found, 0 auto-fixed
+
+## [2026-10-09] ingest | ft_printf
+- Disposition: Update
+- Raw: raw/ft_printf/2026-04-10-variadic-functions-in-c.md
+
+## [2026-10-09] lint | 0 issues found, 0 auto-fixed
+
+## [2026-10-09] lint | 8 issues found, 8 auto-fixed
+
+## [2026-10-09] lint | 4 issues found, 4 auto-fixed

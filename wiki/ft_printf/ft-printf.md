@@ -1,7 +1,7 @@
 # ft_printf
 
-> Sources: 42 School, Unknown; man-pages project, 2026-02-16
-> Raw: [ft-printf-subject-v12-1](../../raw/ft_printf/ft-printf-subject-v12-1.md); [printf-3-linux-manual-page](../../raw/ft_printf/2026-02-16-printf-3-linux-manual-page.md)
+> Sources: 42 School, Unknown; man-pages project, 2026-02-16; GeeksforGeeks, 2026-04-10
+> Raw: [ft-printf-subject-v12-1](../../raw/ft_printf/ft-printf-subject-v12-1.md); [printf-3-linux-manual-page](../../raw/ft_printf/2026-02-16-printf-3-linux-manual-page.md); [variadic-functions-in-c](../../raw/ft_printf/2026-04-10-variadic-functions-in-c.md)
 > Updated: 2026-10-09
 
 ## Overview
@@ -12,11 +12,25 @@ ft_printf is a 42 curriculum project to recode printf() from libc as a small var
 
 Build a library named libftprintf.a containing a function with the prototype:
 
+```c
 int ft_printf(const char *, ...);
+```
 
-Turn-in set is Makefile, *.h, */*.h, *.c, */*.c, with Makefile targets NAME, all, clean, fclean, re. The archive must be created with ar; libtool is forbidden, and the resulting Your libftprintf.a has to be created at the root of your repository. The public header must be named ft_printf.h.
+| Deliverable | Detail |
+|-------------|--------|
+| Library | libftprintf.a |
+| Turn-in files | Makefile, *.h, */*.h, *.c, */*.c |
+| Makefile rules | NAME, all, clean, fclean, re |
+| Archive tool | ar (Using the libtool command is forbidden) |
+| Output location | Your libftprintf.a has to be created at the root of your repository |
+| Public header | ft_printf.h |
 
-Only these external functions are allowed: malloc, free, write, va_start, va_arg, va_copy, va_end. Libft use is authorized via a copied libft folder built through its own Makefile. Compilation uses the flags -Wall, -Wextra, and -Werror, using cc, and the Makefile rules include $(NAME), all, clean, fclean and re without unnecessary relinking.
+Build constraints:
+
+- Only these external functions are allowed: malloc, free, write, va_start, va_arg, va_copy, va_end.
+- Libft use is authorized via a copied libft folder built through its own Makefile.
+- Compilation uses the flags -Wall, -Wextra, and -Werror, using cc.
+- The Makefile rules include $(NAME), all, clean, fclean and re without unnecessary relinking.
 
 Key behavioral requirements:
 
@@ -28,45 +42,123 @@ Key behavioral requirements:
 
 Conversions to implement:
 
-- `%c` Prints a single character.
-- `%s` Prints a string (as defined by the common C convention).
-- `%p` with The void * pointer argument has to be printed in hexadecimal format.
-- `%d` Prints a decimal (base 10) number.
-- `%i` Prints an integer in base 10.
-- `%u` Prints an unsigned decimal (base 10) number.
-- `%x` Prints a number in hexadecimal (base 16) lowercase format.
-- `%X` Prints a number in hexadecimal (base 16) uppercase format.
-- `%%` Prints a percent sign.
+| Specifier | Meaning |
+|-----------|---------|
+| `%c` | Prints a single character. |
+| `%s` | Prints a string (as defined by the common C convention). |
+| `%p` | The void * pointer argument has to be printed in hexadecimal format. |
+| `%d` | Prints a decimal (base 10) number. |
+| `%i` | Prints an integer in base 10. |
+| `%u` | Prints an unsigned decimal (base 10) number. |
+| `%x` | Prints a number in hexadecimal (base 16) lowercase format. |
+| `%X` | Prints a number in hexadecimal (base 16) uppercase format. |
+| `%%` | Prints a percent sign. |
+
+## Variadic machinery (stdarg)
+
+The engine behind ft_printf is the variadic function: In C language, variadic functions are functions that can take a variable number of arguments. The shape is fixed prefix plus open tail: A variadic function takes at least one fixed argument and an ellipsis(...) as the last parameter, written as:
+
+```c
+return_type name(fixed_arg, ...);
+```
+
+Reading the tail requires the stdarg facilities: we have to use the methods specified in the <stdarg.h> library. The access pattern has four steps:
+
+1. Declare a cursor: va_list list;
+2. Anchor it to the last named parameter: va_start(list, fixed_arg); — where fixed_arg: The last fixed argument before the variable arguments (...).
+3. Pull each argument in a loop: va_arg(list, type);
+4. Release when done: va_end(list); — since Once all the arguments are processed, use va_end() to clean up the va_list.
+
+```mermaid
+flowchart TD
+    A["va_list list;"] --> B["va_start(list, fixed_arg);"]
+    B --> C["va_arg(list, type);"]
+    C --> C
+    C --> D["va_end(list);"]
+```
+
+Two rules from the tutorial shape every ft_printf design:
+
+- The callee cannot ask how many arguments arrived, so the count rides along explicitly: the count of variable arguments passed is also passed as fixed parameters, and retrieval must respect that The number of times it should be called should not exceed the number of parameters passed. (printf itself encodes the count implicitly in the format string instead.)
+- Types are unchecked at the call site: It is important to not mix up the type of the arguments, because va_arg reads blindly by the type it is given.
 
 ## Reference behavior (libc printf)
 
 The real printf lives in the Standard C library (libc, -lc) with the canonical declaration:
 
+```c
 int printf(const char *restrict format, ...);
+```
 
-Siblings cover streams, file descriptors, and va_list callers: fprintf, dprintf, vprintf, vfprintf, vdprintf. The va_list variants are equivalent to the variadic ones except for how arguments arrive, and These functions do not call the va_end macro.
+The family covers three output targets plus va_list callers:
+
+- printf and vprintf write output to stdout, the standard output stream.
+- fprintf and vfprintf write output to the given output stream.
+- dprintf outputs to a file descriptor, fd, instead of to a stdio stream.
+- vprintf, vfprintf, and vdprintf are called with a va_list instead of a variable number of arguments, and These functions do not call the va_end macro.
 
 A format string mixes literal text with conversion specifications. The literals are ordinary characters (not %), which are copied unchanged to the output stream, while each specification follows one overall shape:
 
+```text
 %[argument$][flags][width][.precision][length modifier]conversion
+```
 
-Flags control padding, justification, signs, and alternate forms. The interactions that matter most for the 42 bonus work are that If the 0 and - flags both appear, the 0 flag is ignored, that A - overrides a 0 if both are given, and that A + overrides a space if both are used. Width sets a minimum field, never truncating: In no case does a nonexistent or small field width cause truncation of a field. Precision is introduced by a dot: If the precision is given as just '.', the precision is taken to be zero, and A negative precision is taken as if the precision were omitted.
+```mermaid
+flowchart LR
+    P["'%'"] --> F["flags"]
+    F --> W["width"]
+    W --> PR[".precision"]
+    PR --> L["length modifier"]
+    L --> C["conversion"]
+```
 
-For the integer conversions in the 42 subset, the defaults are small: The default precision is 1, and When 0 is printed with an explicit precision 0, the output is empty. For floating-point output, If the precision is missing, it is taken as 6. Length modifiers select argument size, from hh and h up through l, ll, j, z, and t; q is just A synonym for ll, and Z is a legacy spelling its own manual marks with Do not use in new code (as is C, a Synonym for lc. Don't use).
+Flags control padding, justification, signs, and alternate forms. The interactions that matter most for the 42 bonus work:
 
-The full conversion set is wider than the 42 subset: beyond cspdiuxX% the manual also documents o, e, E, f, F, g, G, a, A, C, S, n, and m. Two equivalences are worth remembering when testing against the original: The void * pointer argument is printed in hexadecimal (as if by %#x or %#lx), and for a literal percent sign No argument is converted. The complete conversion specification is '%%'.
+| Combination | Rule |
+|-------------|------|
+| `0` with `-` | If the 0 and - flags both appear, the 0 flag is ignored. |
+| `-` with `0` | A - overrides a 0 if both are given. |
+| `+` with space | A + overrides a space if both are used. |
 
-Return and conformance: Upon successful return, these functions return the number of bytes printed (excluding the null byte used to end output to strings), while On error, a negative value is returned. The core family is standardized as fprintf(), printf(), vprintf(), vfprintf(): C11, POSIX.1-2008. History notes include that glibc 2.1 adds length modifiers hh, j, t, and z and conversion characters a and A.
+Width and precision:
+
+- Width sets a minimum field, never truncating: In no case does a nonexistent or small field width cause truncation of a field.
+- Precision is introduced by a dot: If the precision is given as just '.', the precision is taken to be zero, and A negative precision is taken as if the precision were omitted.
+
+Defaults that matter for the 42 subset:
+
+- Integer conversions: The default precision is 1, and When 0 is printed with an explicit precision 0, the output is empty.
+- Floating-point output: If the precision is missing, it is taken as 6.
+
+Length modifiers select argument size, from hh and h up through l, ll, j, z, and t; q is just A synonym for ll, and Z is a legacy spelling its own manual marks with Do not use in new code (as is C, a Synonym for lc. Don't use).
+
+The full conversion set is wider than the 42 subset: beyond cspdiuxX% the manual also documents o, e, E, f, F, g, G, a, A, C, S, n, and m. Two equivalences are worth remembering when testing against the original:
+
+- `%p`: The void * pointer argument is printed in hexadecimal (as if by %#x or %#lx).
+- `%%`: No argument is converted. The complete conversion specification is '%%'.
+
+Return and conformance:
+
+- Upon successful return, these functions return the number of bytes printed (excluding the null byte used to end output to strings).
+- On error, a negative value is returned.
+- The core family is standardized as fprintf(), printf(), vprintf(), vfprintf(): C11, POSIX.1-2008.
+- History note: glibc 2.1 adds length modifiers hh, j, t, and z and conversion characters a and A.
 
 One security warning from the manual applies to every printf reimplementation: passing user input as the format string often indicates a bug, since foo may contain a % character, and a hostile %n can turn the call into a memory write, creating a security hole.
 
 ## Common engineering rules
 
-Code must be C and Norm-compliant, including bonus files; a norm error means 0. Crashes such as segmentation fault, bus error, or double free make the project non-functional except for undefined behavior. All heap memory must be freed; leaks are not tolerated. Bonus code lives in _bonus.{c/h} files behind a bonus Makefile rule, evaluated separately. Work is submitted to the assigned Git repository, with peer evaluation followed by Deepthought grading that stops on first error section.
+- Code must be C and Norm-compliant, including bonus files; a norm error means 0.
+- Crashes such as segmentation fault, bus error, or double free make the project non-functional except for undefined behavior.
+- All heap memory must be freed; leaks are not tolerated.
+- Bonus code lives in _bonus.{c/h} files behind a bonus Makefile rule, evaluated separately.
+- Work is submitted to the assigned Git repository, with peer evaluation followed by Deepthought grading that stops on first error section.
 
 ## AI and learning rules
 
-The subject frames this as foundational ICT training requiring reasoning before AI help, peer learning over answer-copying, and awareness that exams allow no AI. Learner rules include applying reasoning before AI, not asking AI for direct answers, and learning the 42 global approach on AI. Good practice is talking through a new concept with a peer; bad practice is secretly copying AI code that cannot be explained at evaluation or exam.
+- Foundational ICT training: reasoning before AI help, peer learning over answer-copying, and awareness that exams allow no AI.
+- Learner rules: applying reasoning before AI, not asking AI for direct answers, and learning the 42 global approach on AI.
+- Good practice is talking through a new concept with a peer; bad practice is secretly copying AI code that cannot be explained at evaluation or exam.
 
 ## README requirements
 
@@ -74,7 +166,11 @@ A README.md at the repo root is mandatory. Its very first line must be italicize
 
 This project has been created as part of the 42 curriculum by <login1>[, <login2>[, <login3>[...]]].
 
-Required sections are Description, Instructions, and Resources including how AI was used, plus a detailed explanation and justification of the chosen algorithm and data structure. Additional sections such as usage examples or technical choices may be required when explicitly listed.
+Required content:
+
+- Description, Instructions, and Resources sections, including how AI was used.
+- A detailed explanation and justification of the chosen algorithm and data structure.
+- Additional sections such as usage examples or technical choices may be required when explicitly listed.
 
 ## Bonus
 
@@ -87,4 +183,6 @@ The governing rule is: The bonus part will only be assessed if the mandatory par
 
 ## Submission and defense
 
-Only repo contents are evaluated. After passing, ft_printf() may be added to libft for later C projects. Defense may request a brief modification of the project — a small behavior change or few-line feature — defined in the evaluation guidelines to verify understanding.
+- Only repo contents are evaluated.
+- After passing, ft_printf() may be added to libft for later C projects.
+- Defense may request a brief modification of the project — a small behavior change or few-line feature — defined in the evaluation guidelines to verify understanding.
