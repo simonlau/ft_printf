@@ -40,15 +40,12 @@ bonus: $(LIBFT) $(OBJS) $(BONUS_OBJS)
 
 $(BONUS_OBJS): ft_printf_bonus.h
 
-TEST_CFLAGS	= $(CFLAGS) -Wno-format-security
+TEST_CFLAGS	= $(CFLAGS) -I. -I$(TEST_DIR)
 
-test: bonus
-	$(CC) $(TEST_CFLAGS) -I. $(TEST_DIR)/ft_printf_test.c $(NAME) \
+test: $(NAME) $(TEST_DIR)/ft_printf_test.c
+	$(CC) $(TEST_CFLAGS) $(TEST_DIR)/ft_printf_test.c $(NAME) \
 		-o $(TEST_DIR)/ft_printf_test
-	$(CC) $(TEST_CFLAGS) -I. $(TEST_DIR)/ft_printf_bonus_test.c $(NAME) \
-		-o $(TEST_DIR)/ft_printf_bonus_test
 	./$(TEST_DIR)/ft_printf_test --report-error
-	./$(TEST_DIR)/ft_printf_bonus_test --report-error
 
 clean:
 	$(MAKE) -C $(LIBFT_DIR) clean
