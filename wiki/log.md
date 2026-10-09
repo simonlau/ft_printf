@@ -27,3 +27,9 @@
 - Raw: raw/git/2026-03-25-git-subtree-explained-a-practical-guide-with-examples.md
 
 ## [2026-10-09] lint | 0 issues found, 0 auto-fixed
+
+## [2026-10-09] ingest | ft_printf
+- Disposition: Update
+- Raw: raw/ft_printf/2024-04-27-variadic-functions-in-c-lucas.md
+
+## [2026-10-09] lint | 0 issues found, 0 auto-fixed

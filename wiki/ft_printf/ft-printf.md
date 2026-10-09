@@ -1,7 +1,7 @@
 # ft_printf
 
-> Sources: 42 School, Unknown; man-pages project, 2026-02-16; GeeksforGeeks, 2026-04-10
-> Raw: [ft-printf-subject-v12-1](../../raw/ft_printf/ft-printf-subject-v12-1.md); [printf-3-linux-manual-page](../../raw/ft_printf/2026-02-16-printf-3-linux-manual-page.md); [variadic-functions-in-c](../../raw/ft_printf/2026-04-10-variadic-functions-in-c.md)
+> Sources: 42 School, Unknown; man-pages project, 2026-02-16; GeeksforGeeks, 2026-04-10; Paul J. Lucas (DEV), 2024-04-27
+> Raw: [ft-printf-subject-v12-1](../../raw/ft_printf/ft-printf-subject-v12-1.md); [printf-3-linux-manual-page](../../raw/ft_printf/2026-02-16-printf-3-linux-manual-page.md); [variadic-functions-in-c](../../raw/ft_printf/2026-04-10-variadic-functions-in-c.md); [variadic-functions-in-c-lucas](../../raw/ft_printf/2024-04-27-variadic-functions-in-c-lucas.md)
 > Updated: 2026-10-09
 
 ## Overview
@@ -81,6 +81,41 @@ Two rules from the tutorial shape every ft_printf design:
 
 - The callee cannot ask how many arguments arrived, so the count rides along explicitly: the count of variable arguments passed is also passed as fixed parameters, and retrieval must respect that The number of times it should be called should not exceed the number of parameters passed. (printf itself encodes the count implicitly in the format string instead.)
 - Types are unchecked at the call site: It is important to not mix up the type of the arguments, because va_arg reads blindly by the type it is given.
+
+Recipe notes that matter for implementation:
+
+- The anchor parameter can be anything: Note that it can be of any type — only its position (last before `...`) matters.
+- Each fetch names its own type: (The type T may be different for each call.)
+- The cursor name is free: You can name it anything you want, but args is conventional.
+- The ellipsis is always trailing: The ... must always be last.
+
+va_arg conversions — what the callee actually receives:
+
+| Passed as | Received as |
+|-----------|-------------|
+| char, signed char, unsigned char, short, and unsigned short | promoted to either int or unsigned int as appropriate |
+| float | promoted to double |
+| array | converted to a pointer to its zeroth element |
+| function name | converted to a pointer to that function |
+
+This is why `%c` reads an `int` and `%s` reads a pointer: only default argument conversions occur, so every `va_arg` type in the dispatcher must name the promoted type, never the narrow one.
+
+Undefined-behavior rules (the contract ft_printf relies on its caller to honor):
+
+- There is no way to know how many arguments were given, and There is no way to know for certain what the type of any argument actually is.
+- Attempting to access more arguments than were given results in undefined behavior; however, accessing fewer is OK.
+- When iterating over arguments via va_arg(), the given type must match the actual type. If it doesn't, the result is undefined behavior.
+
+Three strategies exist for the count problem — an explicit count argument, a sentinel terminator, or a format string. printf uses the third: each % within the format is a conversion specifier and has a one-to-one correspondence with an argument, so the implementation scans for `%` and it fetches the next variadic argument's value via va_arg() using the type specified by the character(s) that follow the %. A mismatch in either direction (fewer arguments than specifiers, or specifier type versus argument type) is undefined behavior — which is exactly what the 42 evaluation diffs against.
+
+Forwarding whole argument lists uses the `v` counterparts rather than re-reading:
+
+```c
+int vprintf( const char *format, va_list vlist );
+int vfprintf( FILE *stream, const char *format, va_list vlist );
+```
+
+A va_list parameter allows one variadic function to pass its variable arguments to another — the pattern for any wrapper (e.g. an error printer that prefixes file and line, then delegates the format tail to `vfprintf`).
 
 ## Reference behavior (libc printf)
 
