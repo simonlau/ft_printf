@@ -6,4 +6,4 @@
 
 | Article | Summary | Updated |
 |---------|---------|---------|
-| [ft_printf](ft_printf/ft-printf.md) | ft_printf variadic printf recode spec: conversions, library rules, README and bonus | 2026-10-09 |
+| [ft_printf](ft_printf/ft-printf.md) | ft_printf recode spec plus libc printf(3) reference: conversions, flags, width, precision, return value | 2026-10-09 |

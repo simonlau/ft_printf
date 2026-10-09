@@ -1,12 +1,12 @@
 # ft_printf
 
-> Sources: 42 School, Unknown
-> Raw: [ft-printf-subject-v12-1](../../raw/ft_printf/ft-printf-subject-v12-1.md)
+> Sources: 42 School, Unknown; man-pages project, 2026-02-16
+> Raw: [ft-printf-subject-v12-1](../../raw/ft_printf/ft-printf-subject-v12-1.md); [printf-3-linux-manual-page](../../raw/ft_printf/2026-02-16-printf-3-linux-manual-page.md)
 > Updated: 2026-10-09
 
 ## Overview
 
-ft_printf is a 42 curriculum project to recode printf() from libc as a small variadic library, focused on well-structured and extensible C code. The subject version ingested here is Version: 12.1.
+ft_printf is a 42 curriculum project to recode printf() from libc as a small variadic library, focused on well-structured and extensible C code. The subject version ingested here is Version: 12.1, and the reference behavior is grounded in the Linux printf(3) manual, which documents the full format-string machinery the 42 subset is compared against.
 
 ## Mandatory library
 
@@ -37,6 +37,28 @@ Conversions to implement:
 - `%x` Prints a number in hexadecimal (base 16) lowercase format.
 - `%X` Prints a number in hexadecimal (base 16) uppercase format.
 - `%%` Prints a percent sign.
+
+## Reference behavior (libc printf)
+
+The real printf lives in the Standard C library (libc, -lc) with the canonical declaration:
+
+int printf(const char *restrict format, ...);
+
+Siblings cover streams, file descriptors, and va_list callers: fprintf, dprintf, vprintf, vfprintf, vdprintf. The va_list variants are equivalent to the variadic ones except for how arguments arrive, and These functions do not call the va_end macro.
+
+A format string mixes literal text with conversion specifications. The literals are ordinary characters (not %), which are copied unchanged to the output stream, while each specification follows one overall shape:
+
+%[argument$][flags][width][.precision][length modifier]conversion
+
+Flags control padding, justification, signs, and alternate forms. The interactions that matter most for the 42 bonus work are that If the 0 and - flags both appear, the 0 flag is ignored, that A - overrides a 0 if both are given, and that A + overrides a space if both are used. Width sets a minimum field, never truncating: In no case does a nonexistent or small field width cause truncation of a field. Precision is introduced by a dot: If the precision is given as just '.', the precision is taken to be zero, and A negative precision is taken as if the precision were omitted.
+
+For the integer conversions in the 42 subset, the defaults are small: The default precision is 1, and When 0 is printed with an explicit precision 0, the output is empty. For floating-point output, If the precision is missing, it is taken as 6. Length modifiers select argument size, from hh and h up through l, ll, j, z, and t; q is just A synonym for ll, and Z is a legacy spelling its own manual marks with Do not use in new code (as is C, a Synonym for lc. Don't use).
+
+The full conversion set is wider than the 42 subset: beyond cspdiuxX% the manual also documents o, e, E, f, F, g, G, a, A, C, S, n, and m. Two equivalences are worth remembering when testing against the original: The void * pointer argument is printed in hexadecimal (as if by %#x or %#lx), and for a literal percent sign No argument is converted. The complete conversion specification is '%%'.
+
+Return and conformance: Upon successful return, these functions return the number of bytes printed (excluding the null byte used to end output to strings), while On error, a negative value is returned. The core family is standardized as fprintf(), printf(), vprintf(), vfprintf(): C11, POSIX.1-2008. History notes include that glibc 2.1 adds length modifiers hh, j, t, and z and conversion characters a and A.
+
+One security warning from the manual applies to every printf reimplementation: passing user input as the format string often indicates a bug, since foo may contain a % character, and a hostile %n can turn the call into a memory write, creating a security hole.
 
 ## Common engineering rules
 
