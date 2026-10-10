@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_print_char.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: simon.lau <simon.lau@student.42.fr>         #+  +:+       +#+        */
+/*   By: simon.lau <simon.lau@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/09 16:31:31 by simon.lau         #+#    #+#             */
-/*   Updated: 2026/10/09 16:31:31 by simon.lau        ###   ########.fr       */
+/*   Updated: 2026/10/10 14:36:01 by simon.lau        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,8 @@
 
 int	ft_print_char(int c)
 {
-	/* TODO: convert to unsigned char, write(1, &c, 1), return 1. */
-	(void)c;
-	return (0);
+	ft_putchar_fd(c, STDOUT_FILENO);
+	return (1);
 }
 
 int	ft_print_str(char *s)
