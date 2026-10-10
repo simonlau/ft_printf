@@ -2,6 +2,7 @@ NAME		= libftprintf.a
 
 CC		= cc
 CFLAGS		= -Wall -Wextra -Werror
+CFLAGS += -g3 -fsanitize=address,undefined -fno-omit-frame-pointer -fno-sanitize-recover=all
 AR		= ar
 ARFLAGS		= rcs
 RM		= rm -f
