@@ -1,5 +1,6 @@
-tests/ft_printf_test
-tests/ft_printf_bonus_test
+tests/test_*
+!tests/test_*.c
+!tests/test.h
 
 # Created by https://www.toptal.com/developers/gitignore/api/windows,osx,linux,c
 # Edit at https://www.toptal.com/developers/gitignore?templates=windows,osx,linux,c

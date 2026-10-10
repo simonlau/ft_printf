@@ -1,6 +1,7 @@
 #ifndef FT_PRINT_TEST_H
 # define FT_PRINT_TEST_H
 
+# include "tst.h"
 # include <stdio.h>
 # include <unistd.h>
 

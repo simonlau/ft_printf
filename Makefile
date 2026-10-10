@@ -20,7 +20,8 @@ LIBFT_DIR	= libft
 LIBFT		= $(LIBFT_DIR)/libft.a
 
 TEST_DIR	= tests
-TEST_BINS	= $(TEST_DIR)/ft_printf_test $(TEST_DIR)/ft_printf_bonus_test
+TEST_SRCS	= $(wildcard $(TEST_DIR)/test_*.c)
+TEST_BINS	= $(TEST_SRCS:.c=)
 
 all: $(NAME)
 
@@ -42,10 +43,13 @@ $(BONUS_OBJS): ft_printf_bonus.h
 
 TEST_CFLAGS	= $(CFLAGS) -I. -I$(TEST_DIR)
 
-test: $(NAME) $(TEST_DIR)/ft_printf_test.c
-	$(CC) $(TEST_CFLAGS) $(TEST_DIR)/ft_printf_test.c $(NAME) \
-		-o $(TEST_DIR)/ft_printf_test
-	./$(TEST_DIR)/ft_printf_test --report-error
+$(TEST_DIR)/%: $(TEST_DIR)/%.c $(NAME)
+	$(CC) $(TEST_CFLAGS) $< $(NAME) -o $@
+
+build-tests: $(TEST_BINS)
+
+test: build-tests
+	for t in $(TEST_BINS); do ./$$t --report-error || exit 1; done
 
 clean:
 	$(MAKE) -C $(LIBFT_DIR) clean
@@ -57,4 +61,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re bonus test
+.PHONY: all clean fclean re bonus test build-tests

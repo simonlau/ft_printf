@@ -1,18 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf_test.c                                   :+:      :+:    :+:   */
+/*   test_format.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: simon.lau <simon.lau@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/09 16:31:31 by simon.lau         #+#    #+#             */
-/*   Updated: 2026/10/10 10:41:53 by simon.lau        ###   ########.fr       */
+/*   Updated: 2026/10/10 11:56:59 by simon.lau        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_print_test.h"
 #include "ft_printf.h"
-#include "tst.h"
+#include "test.h"
 
 tstsuite("ft_printf format str only")
 {
