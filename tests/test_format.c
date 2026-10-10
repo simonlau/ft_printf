@@ -6,7 +6,7 @@
 /*   By: simon.lau <simon.lau@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/09 16:31:31 by simon.lau         #+#    #+#             */
-/*   Updated: 2026/10/10 11:56:59 by simon.lau        ###   ########.fr       */
+/*   Updated: 2026/10/10 12:04:41 by simon.lau        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 tstsuite("ft_printf format str only")
 {
-	char	out[4096];
+	char	out[OUT_MAX];
 	int		ret;
 	char	format[] = "hello";
 

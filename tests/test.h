@@ -5,6 +5,8 @@
 # include <stdio.h>
 # include <unistd.h>
 
+# define OUT_MAX 4096
+
 static FILE	*g_tmp = NULL;
 static int	g_saved_stdout = -1;
 
