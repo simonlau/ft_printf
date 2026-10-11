@@ -6,7 +6,7 @@
 /*   By: simon.lau <simon.lau@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/10 11:00:00 by simon.lau         #+#    #+#             */
-/*   Updated: 2026/10/11 09:57:55 by simon.lau        ###   ########.fr       */
+/*   Updated: 2026/10/11 10:36:20 by simon.lau        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,17 @@ tstsuite("ft_printf single char")
 	int		tstdata[NUM_TRIALS];
 
 	srand(time(NULL));
-	tstcase("single A char")
+	tstcase("just percent")
+	{
+		cap_begin();
+		num = ft_printf("%%");
+		cap_end(out, sizeof(out));
+		expected_num = snprintf(expected, sizeof(expected), "%%");
+		tstexpect(num == expected_num && strcmp(out, expected) == 0,
+			"num=%d out=%s expected_num=%d expected=%s", num, out, expected_num,
+			expected);
+	}
+	tstcase("single char")
 	{
 		for (int i = 0; i < NUM_TRIALS; i++)
 		{

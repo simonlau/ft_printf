@@ -6,7 +6,7 @@
 /*   By: simon.lau <simon.lau@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/09 16:31:31 by simon.lau         #+#    #+#             */
-/*   Updated: 2026/10/10 14:36:01 by simon.lau        ###   ########.fr       */
+/*   Updated: 2026/10/11 10:37:00 by simon.lau        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,6 @@ int	ft_print_str(char *s)
 
 int	ft_print_percent(void)
 {
-	/* TODO: write a single '%' and return 1. */
-	return (0);
+	ft_print_char('%');
+	return (1);
 }
