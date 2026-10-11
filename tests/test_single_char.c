@@ -6,14 +6,14 @@
 /*   By: simon.lau <simon.lau@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/10 11:00:00 by simon.lau         #+#    #+#             */
-/*   Updated: 2026/10/11 10:36:20 by simon.lau        ###   ########.fr       */
+/*   Updated: 2026/10/11 21:10:12 by simon.lau        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 #include "test.h"
+#include <limits.h>
 #include <string.h>
-#include <time.h>
 
 tstsuite("ft_printf single char")
 {
@@ -23,7 +23,7 @@ tstsuite("ft_printf single char")
 	int		expected_num;
 	int		tstdata[NUM_TRIALS];
 
-	srand(time(NULL));
+	srand(SEED);
 	tstcase("just percent")
 	{
 		cap_begin();
@@ -60,6 +60,10 @@ tstsuite("ft_printf single char")
 		}
 		tstsection("check 2 char")
 		{
+			if (tstcurdata == INT_MAX)
+			{
+				return ;
+			}
 			cap_begin();
 			num = ft_printf("%c%c", tstcurdata, tstcurdata + 1);
 			cap_end(out, sizeof(out));
