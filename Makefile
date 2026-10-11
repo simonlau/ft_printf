@@ -44,7 +44,7 @@ $(BONUS_OBJS): ft_printf_bonus.h
 
 TEST_CFLAGS	= $(CFLAGS) -I. -I$(TEST_DIR)
 
-$(TEST_DIR)/%: $(TEST_DIR)/%.c $(NAME)
+$(TEST_DIR)/%: $(TEST_DIR)/%.c $(TEST_DIR)/test.h $(NAME)
 	$(CC) $(TEST_CFLAGS) $< $(NAME) -o $@
 
 build-tests: $(TEST_BINS)
