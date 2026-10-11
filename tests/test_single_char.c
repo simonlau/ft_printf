@@ -6,36 +6,58 @@
 /*   By: simon.lau <simon.lau@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/10 11:00:00 by simon.lau         #+#    #+#             */
-/*   Updated: 2026/10/10 13:33:58 by simon.lau        ###   ########.fr       */
+/*   Updated: 2026/10/11 09:57:55 by simon.lau        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 #include "test.h"
 #include <string.h>
+#include <time.h>
 
 tstsuite("ft_printf single char")
 {
 	char	out[OUT_MAX];
-	int		ret;
+	char	expected[OUT_MAX];
+	int		num;
+	int		expected_num;
+	int		tstdata[NUM_TRIALS];
 
-	tstcase("placeholder: single char links and runs")
+	srand(time(NULL));
+	tstcase("single A char")
 	{
-		cap_begin();
-		ret = ft_printf("%c", 'A');
-		cap_end(out, sizeof(out));
-		/* PLACEHOLDER: %c not dispatched yet, format is echoed
-			* literally. Expect ret=2 out="%c"; replace with ret=1
-			* out="A" once %c lands. */
-		tstcheck(ret == 1 && strcmp(out, "A") == 0, "ret=%d out=%s", ret, out);
+		for (int i = 0; i < NUM_TRIALS; i++)
+		{
+			tstdata[i] = rand();
+		}
+		tstsection("check single char")
+		{
+			cap_begin();
+			num = ft_printf("%c", tstcurdata);
+			cap_end(out, sizeof(out));
+			expected_num = snprintf(expected, sizeof(expected), "%c",
+					tstcurdata);
+			tstexpect(num == expected_num && strcmp(out, expected) == 0,
+				"num=%d out=%s expected_num=%d expected=%s", num, out,
+				expected_num, expected);
+		}
 	}
-	// tstcase("placeholder: single char edge links and runs")
-	// {
-	// 	cap_begin();
-	// 	ret = ft_printf("%c%c", 'A', 'B');
-	// 	cap_end(out, sizeof(out));
-	// 	/* PLACEHOLDER: see above; replace with ret=2 out="AB". */
-	// 	tstcheck(ret == 4 && strcmp(out, "%c%c") == 0, "ret=%d out=%s", ret,
-	// 		out);
-	// }
+	tstcase("char A B")
+	{
+		for (int i = 0; i < NUM_TRIALS; i++)
+		{
+			tstdata[i] = rand();
+		}
+		tstsection("check 2 char")
+		{
+			cap_begin();
+			num = ft_printf("%c%c", tstcurdata, tstcurdata + 1);
+			cap_end(out, sizeof(out));
+			expected_num = snprintf(expected, sizeof(expected), "%c%c",
+					tstcurdata, tstcurdata + 1);
+			tstexpect(num == expected_num && strcmp(out, expected) == 0,
+				"num=%d out=%s expected_num=%d expected=%s", num, out,
+				expected_num, expected);
+		}
+	}
 }
