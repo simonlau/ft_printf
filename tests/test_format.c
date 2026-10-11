@@ -6,7 +6,7 @@
 /*   By: simon.lau <simon.lau@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/09 16:31:31 by simon.lau         #+#    #+#             */
-/*   Updated: 2026/10/10 23:03:07 by simon.lau        ###   ########.fr       */
+/*   Updated: 2026/10/11 21:06:47 by simon.lau        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,8 @@ tstsuite("ft_printf format str only")
 	char	out[OUT_MAX];
 	char	expected[OUT_MAX];
 	int		num;
-	char	format[] = "hello";
 	int		expected_num;
+	char	*tstdata[] = {"", "hello", "world"};
 
 	tstcase("test null format str")
 	{
@@ -28,24 +28,18 @@ tstsuite("ft_printf format str only")
 		cap_end(out, sizeof(out));
 		tstexpect(num == 0 && strcmp(out, "") == 0, "ret=%d out=%s", num, out);
 	}
-	tstcase("test empty format str")
+	tstcase("test str values")
 	{
-		cap_begin();
-		num = ft_printf("");
-		cap_end(out, sizeof(out));
-		expected_num = snprintf(expected, sizeof(expected), "%s", "");
-		tstexpect(num == expected_num && strcmp(out, expected) == 0,
-			"num=%d out=%s expected_num=%d expected=%s", num, out, expected_num,
-			expected);
-	}
-	tstcase("test no conversions in format str")
-	{
-		cap_begin();
-		num = ft_printf(format);
-		cap_end(out, sizeof(out));
-		expected_num = snprintf(expected, sizeof(expected), "%s", format);
-		tstexpect(num == expected_num && strcmp(out, expected) == 0,
-			"num=%d out=%s expected_num=%d expected=%s", num, out, expected_num,
-			expected);
+		tstsection("plain str")
+		{
+			cap_begin();
+			num = ft_printf(tstcurdata);
+			cap_end(out, sizeof(out));
+			expected_num = snprintf(expected, sizeof(expected), "%s",
+					tstcurdata);
+			tstexpect(num == expected_num && strcmp(out, expected) == 0,
+				"num=%d out=%s expected_num=%d expected=%s", num, out,
+				expected_num, expected);
+		}
 	}
 }
