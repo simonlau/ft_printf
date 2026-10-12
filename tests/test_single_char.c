@@ -6,7 +6,7 @@
 /*   By: simon.lau <simon.lau@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/10 11:00:00 by simon.lau         #+#    #+#             */
-/*   Updated: 2026/10/11 21:10:12 by simon.lau        ###   ########.fr       */
+/*   Updated: 2026/10/12 21:06:51 by simon.lau        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,10 +60,7 @@ tstsuite("ft_printf single char")
 		}
 		tstsection("check 2 char")
 		{
-			if (tstcurdata == INT_MAX)
-			{
-				return ;
-			}
+			tstskipif(tstcurdata == INT_MAX);
 			cap_begin();
 			num = ft_printf("%c%c", tstcurdata, tstcurdata + 1);
 			cap_end(out, sizeof(out));
