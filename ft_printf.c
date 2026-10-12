@@ -6,7 +6,7 @@
 /*   By: simon.lau <simon.lau@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/09 16:31:31 by simon.lau         #+#    #+#             */
-/*   Updated: 2026/10/11 20:14:35 by simon.lau        ###   ########.fr       */
+/*   Updated: 2026/10/11 20:58:30 by simon.lau        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static int	convert(char c, va_list *args)
 	else if (c == 'u')
 		return (ft_print_unsigned(va_arg(*args, unsigned int)));
 	else if (c == 'x' || c == 'X')
-		return (ft_print_hex(va_arg(*args, int), c == 'X'));
+		return (ft_print_hex(va_arg(*args, unsigned int), c == 'X'));
 	else if (c == '%')
 		return (ft_print_percent());
 	return (-1);
