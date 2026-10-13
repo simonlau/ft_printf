@@ -15,3 +15,11 @@ Git workflows and repository techniques.
 | Article | Summary | Updated |
 |---------|---------|---------|
 | [git subtree](git/git-subtree.md) | Embed repos as subdirectories: add/pull/push/split, vs submodule, pitfalls | 2026-10-09 |
+
+## binutils
+
+Binary inspection and toolchain utilities.
+
+| Article | Summary | Updated |
+|---------|---------|---------|
+| [nm and binary symbols](binutils/nm-symbols.md) | Read nm output, decode symbol types, stripped binaries, link-error diagnosis | 2026-10-09 |
