@@ -14,6 +14,15 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+/**
+ * @brief Allocates memory for an array of count elements of size
+ * bytes each, zeroed.
+ * @param count Number of elements.
+ * @param size Size in bytes of each element.
+ * @return Pointer to the allocated memory, or NULL on failure.
+ *
+ * @see man calloc(3)
+ */
 void	*ft_calloc(size_t count, size_t size)
 {
 	void	*ptr;

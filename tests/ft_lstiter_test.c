@@ -1,72 +1,50 @@
 #include "libft.h"
-#include "registry.h"
-#include "theft.h"
+#include "tst.h"
+#include <stdlib.h>
+#include <stdint.h>
+#include "test.h"
 
-static int					g_calls;
+static int		g_calls;
 
 static void	change(void *content)
 {
-	(void)content;
+	*(int *)content = 42;
 	g_calls++;
-	return ;
 }
 
-static void	noop(void *content)
+static void	del_int(void *content)
 {
-	(void)content;
-	return ;
+	free(content);
 }
 
-static enum theft_trial_res	prop_lstiter(struct theft *t, void *arg1,
-		void *arg2, void *arg3)
-{
-	char	*a;
-	char	*b;
-	char	*c;
-	t_list	*head;
+tstsuite("ft_lstiter") {
+    tstcase("iter invokes callback once per node and mutates content") {
+        int		i;
+		t_list	*head;
+		t_list	*cur;
+		int		*val;
 
-	(void)t;
-	a = (char *)arg1;
-	b = (char *)arg2;
-	c = (char *)arg3;
-	head = NULL;
-	ft_lstadd_front(&head, ft_lstnew(a));
-	ft_lstadd_front(&head, ft_lstnew(b));
-	ft_lstadd_front(&head, ft_lstnew(c));
-	g_calls = 0;
-	ft_lstiter(head, change);
-	if (g_calls != 3)
-	{
-		ft_lstclear(&head, noop);
-		return (THEFT_TRIAL_FAIL);
-	}
-	ft_lstclear(&head, noop);
-	return (THEFT_TRIAL_PASS);
+        srand(SEED);
+        for (i = 0; i < TRIALS; i++) {
+            head = NULL;
+            for (int j = 0; j < 3; j++)
+            {
+                val = malloc(sizeof(int));
+                if (val == NULL)
+                    break ;
+                *val = j;
+                ft_lstadd_back(&head, ft_lstnew(val));
+            }
+            g_calls = 0;
+            ft_lstiter(head, change);
+            tstexpect(g_calls == 3, "ft_lstiter: callback called 3 times");
+            cur = head;
+            while (cur != NULL)
+            {
+                tstexpect(*(int *)cur->content == 42, "ft_lstiter: content mutated");
+                cur = cur->next;
+            }
+            ft_lstclear(&head, del_int);
+        }
+    }
 }
-
-int	ft_lstiter_test(void)
-{
-	enum theft_run_res	res;
-
-	struct theft_run_config cfg = {
-		.prop3 = prop_lstiter,
-		.name = __FILE__,
-		.trials = 1000,
-		.type_info = {theft_get_builtin_type_info(THEFT_BUILTIN_char_ARRAY),
-			theft_get_builtin_type_info(THEFT_BUILTIN_char_ARRAY),
-			theft_get_builtin_type_info(THEFT_BUILTIN_char_ARRAY)},
-	};
-	res = theft_run(&cfg);
-	if (res != THEFT_RUN_PASS)
-		return (EXIT_FAILURE);
-	return (EXIT_SUCCESS);
-}
-
-REGISTER_TEST(1, ft_lstiter_test)
-
-#ifndef ALL_TESTS
-int	main(void)
-{
-	return (ft_lstiter_test());
-}
-#endif

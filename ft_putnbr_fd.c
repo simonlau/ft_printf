@@ -27,6 +27,13 @@ void	write_digits(unsigned int n, int fd)
 	write_digits(n % 10, fd);
 }
 
+/**
+ * @brief Outputs the integer n to the given file descriptor.
+ * @param n The integer to output.
+ * @param fd The file descriptor on which to write.
+ *
+ * @see raw/project-overview/libft-subject.md
+ */
 void	ft_putnbr_fd(int n, int fd)
 {
 	long	num;

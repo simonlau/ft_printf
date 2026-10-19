@@ -1,54 +1,47 @@
 #include "libft.h"
-#include "registry.h"
-#include "theft.h"
+#include "tst.h"
+#include <stdlib.h>
 #include <string.h>
+#include "test.h"
 
-static void	f(unsigned int i, char *c)
+static void	f_iter(unsigned int i, char *c)
 {
 	(void)i;
 	*c = '?';
 }
 
-static enum theft_trial_res	prop_set_then_check(struct theft *t, void *arg1)
-{
-	char	*s;
-	char	*expected;
+tstsuite("ft_striteri") {
+    tstcase("property replaces every char with '?' in place") {
+        char	*s;
+        char	*s_save;
+        char	*expected;
+        size_t	len;
+        int		i;
 
-	(void)t;
-	s = (char *)arg1;
-	ft_striteri(s, f);
-	expected = calloc(1 + strlen(s), sizeof(char));
-	memset(expected, '?', strlen(s));
-	if (strcmp(expected, s) == 0)
-	{
-		free(expected);
-		return (THEFT_TRIAL_PASS);
-	}
-	free(expected);
-	return (THEFT_TRIAL_FAIL);
+        srand(SEED);
+        for (i = 0; i < TRIALS; i++) {
+            s = make_rand_str();
+            if (s == NULL)
+                continue ;
+            s_save = strdup(s);
+            if (s_save == NULL) {
+                free(s);
+                continue ;
+            }
+            len = strlen(s);
+            ft_striteri(s, f_iter);
+            expected = calloc(1 + len, sizeof(char));
+            if (expected == NULL) {
+                free(s_save);
+                free(s);
+                continue ;
+            }
+            memset(expected, '?', len);
+            tstexpect(strcmp(expected, s) == 0,
+                "ft_striteri(%s) did not set all chars to '?'", s_save);
+            free(s_save);
+            free(expected);
+            free(s);
+        }
+    }
 }
-
-int	ft_striteri_test(void)
-{
-	enum theft_run_res	res;
-
-	struct theft_run_config cfg = {
-		.prop1 = prop_set_then_check,
-		.name = __FILE__,
-		.trials = 1000,
-		.type_info = {theft_get_builtin_type_info(THEFT_BUILTIN_char_ARRAY)},
-	};
-	res = theft_run(&cfg);
-	if (res == THEFT_RUN_PASS)
-		return (EXIT_SUCCESS);
-	return (EXIT_FAILURE);
-}
-
-REGISTER_TEST(1, ft_striteri_test)
-
-#ifndef ALL_TESTS
-int	main(void)
-{
-	return (ft_striteri_test());
-}
-#endif

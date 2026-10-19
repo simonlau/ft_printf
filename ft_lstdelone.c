@@ -13,6 +13,14 @@
 #include "libft.h"
 #include <stdlib.h>
 
+/**
+ * @brief Takes a node and frees its content using del.
+ * Frees the node itself but not the next node.
+ * @param lst The node to free.
+ * @param del Address of the function used to delete the content.
+ *
+ * @see raw/project-overview/libft-subject.md
+ */
 void	ft_lstdelone(t_list *lst, void (*del)(void *))
 {
 	if (lst == NULL || del == NULL)

@@ -6,7 +6,7 @@
 #    By: simon.lau <simon.lau@student.42.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/08/07 15:20:10 by simon.lau         #+#    #+#              #
-#    Updated: 2026/10/03 15:52:56 by simon.lau        ###   ########.fr        #
+#    Updated: 2026/10/18 17:15:09 by simon.lau        ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,14 +14,18 @@ CC := cc
 AR := ar
 ARFLAGS := rcs
 
-THEFT_URL := https://github.com/silentbicycle/theft.git
-THEFT_DIR := theft
+TST_URL := https://github.com/rdentato/tst.git
+TST_DIR := tst
 
-CFLAGS := -Wall -Wextra -Werror -I$(THEFT_DIR)/inc -I.
-CFLAGS += -g3 -fsanitize=address,undefined -fno-omit-frame-pointer -fno-sanitize-recover=all
-LDFLAGS += -Wl,--as-needed -lbsd
+CFLAGS := -Wall -Wextra -Werror -I$(TST_DIR)/src -I.
+SANFLAGS = -fsanitize=address,undefined -fno-omit-frame-pointer -g -fno-sanitize-recover=all
+ifeq ($(shell uname -s),Linux)
+    LDFLAGS += -Wl,--as-needed -lbsd
+endif
 
-TESTS := $(basename $(notdir $(wildcard tests/*_test.c)))
+TEST_DIR := tests
+TEST_SRCS := $(wildcard $(TEST_DIR)/ft_*_test.c)
+TEST_BINS := $(TEST_SRCS:.c=)
 SRCS := ft_isalpha.c \
 	ft_isdigit.c \
 	ft_isalnum.c \
@@ -69,57 +73,41 @@ OBJS := $(SRCS:.c=.o)
 DEPS := $(SRCS:.c=.d)
 NAME := libft.a
 
-.PHONY: all clean fclean re test run-tests coverage clone-theft wipe all-tests run-all
+.PHONY: all clean fclean re test run-tests coverage clone-tst wipe build-tests clean-tests
 
 all: $(NAME)
 
 $(NAME): $(OBJS)
 	$(AR) $(ARFLAGS) $@ $^
 
-test: $(TESTS)
+TEST_CFLAGS = $(CFLAGS) -I. -I$(TEST_DIR)
 
-ASAN_OPTIONS := allocator_may_return_null=1
-%_test: %.c tests/%_test.c tests/registry.c $(NAME) $(THEFT_DIR)/build/libtheft.a
-	$(CC) $(CFLAGS) -o $@ $^ -lm
+build-tests: $(TEST_BINS)
 
-all-tests: tests/all-tests.c tests/registry.c $(wildcard tests/ft_*.c) $(NAME) $(THEFT_DIR)/build/libtheft.a
-	$(CC) $(CFLAGS) -Itests -DALL_TESTS -o $@ tests/all-tests.c tests/registry.c $(wildcard tests/ft_*.c) $(NAME) $(THEFT_DIR)/build/libtheft.a -lm
+$(TEST_DIR)/%: $(TEST_DIR)/%.c $(TEST_DIR)/test.h $(TEST_DIR)/test_utils.c libft.h $(NAME) | clone-tst
+	$(CC) $(TEST_CFLAGS) $< tests/test_utils.c $(NAME) $(LDFLAGS) -o $@
 
-run-all: all-tests
-	ASAN_OPTIONS=$(ASAN_OPTIONS) ./all-tests
+test: clean-tests
+	$(MAKE) build-tests TEST_CFLAGS="$(CFLAGS) $(SANFLAGS) -I. -I$(TEST_DIR)"
+	@for t in $(TEST_BINS); do ASAN_OPTIONS=allocator_may_return_null=1 ./$$t --report-error || exit 1; done
 
-$(THEFT_DIR)/build/libtheft.a:
-	$(MAKE) -C $(THEFT_DIR)
+clean-tests:
+	rm -f $(TEST_BINS)
+
+clone-tst:
+	@if [ ! -d $(TST_DIR) ]; then git clone --depth 1 $(TST_URL) $(TST_DIR); fi
 
 %.o: %.c libft.h
-	$(CC) $(CFLAGS) -MMD -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 -include $(DEPS)
 
-clone-theft:
-	git clone --depth 1 $(THEFT_URL) $(THEFT_DIR)
-
-clean:
-	rm -f $(OBJS) $(DEPS) $(TESTS)
+clean: clean-tests
+	rm -f $(OBJS) $(DEPS) $(TEST_BINS)
 	rm -f *.gcda *.gcno tests/*.gcda tests/*.gcno
-	rm -rf $(TESTS:=.dSYM) all-tests all-tests.dSYM coverage .coverage
+	rm -rf $(TEST_BINS:=.dSYM) all-tests all-tests.dSYM coverage .coverage
 
 fclean: clean
 	rm -f $(NAME)
 
 re: fclean all
-
-run-tests: $(TESTS)
-	@for test in $(TESTS); do \
-		ASAN_OPTIONS=$(ASAN_OPTIONS) ./$$test || exit 1; \
-	done
-
-coverage: run-tests
-	@mkdir -p coverage
-	@gcov -p -o . $(SRCS) 2>/dev/null || true
-	@mv *.gcov coverage/ 2>/dev/null || true
-	@echo "Coverage reports generated in coverage/"
-
-wipe: fclean
-	rm -rf docs tests raw wiki
-	rm skills-lock.json

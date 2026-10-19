@@ -1,49 +1,47 @@
 #include "libft.h"
-#include "registry.h"
-#include "theft.h"
+#include "tst.h"
+#include "test.h"
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
-static enum theft_trial_res	prop_oracle(struct theft *t, void *arg1)
-{
-	int		num;
-	char	*result;
-	int		expected;
+tstsuite("ft_itoa") {
+    tstcase("roundtrip from ft_itoa to atoi") {
+        int num;
+        char *result;
+        int expected;
+        
+        srand(SEED);
+        int i;
+        for (i = 0; i < TRIALS; i++) {
+            num = rand() % INT_MAX - (rand() % 2);
+            result = ft_itoa(num);
+            if (result == NULL) continue;
+            expected = atoi(result);
+            tstexpect(expected == num, "ft_itoa(%d) roundtrip fail: got %d", num, expected);
+            free(result);
+        }
+    }
 
-	(void)t;
-	num = *(const int *)arg1;
-	result = ft_itoa(num);
-	expected = atoi(result);
-	if (expected == num)
-	{
-		free(result);
-		return (THEFT_TRIAL_PASS);
-	}
-	free(result);
-	return (THEFT_TRIAL_FAIL);
+    tstcase("edge extreme values") {
+        struct {
+            int            val;
+            const char    *expected;
+        } tstdata[] = {
+            { 0,          "0" },
+            { 1,          "1" },
+            { -1,         "-1" },
+            { INT_MAX,    "2147483647" },
+            { INT_MIN,    "-2147483648" },
+        };
+        char       *result;
+
+        tstsection("edge extreme values")
+        {
+            result = ft_itoa(tstcurdata.val);
+            tstexpect(result != NULL && strcmp(result, tstcurdata.expected) == 0,
+                "ft_itoa(%d) = %s != %s", tstcurdata.val, result ? result : "(null)", tstcurdata.expected);
+            free(result);
+        }
+    }
 }
-
-int	ft_itoa_test(void)
-{
-	enum theft_run_res	res;
-
-	struct theft_run_config cfg = {
-		.prop1 = prop_oracle,
-		.name = __FILE__,
-		.trials = 1000,
-		.type_info = {theft_get_builtin_type_info(THEFT_BUILTIN_int)},
-	};
-	res = theft_run(&cfg);
-	if (res == THEFT_RUN_PASS)
-		return (EXIT_SUCCESS);
-	return (EXIT_FAILURE);
-}
-
-REGISTER_TEST(1, ft_itoa_test)
-
-#ifndef ALL_TESTS
-int	main(void)
-{
-	return (ft_itoa_test());
-}
-#endif

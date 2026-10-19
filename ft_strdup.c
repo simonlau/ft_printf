@@ -13,6 +13,13 @@
 #include "libft.h"
 #include <stdlib.h>
 
+/**
+ * @brief Returns a pointer to a new string which is a duplicate of s1.
+ * @param s1 The string to duplicate.
+ * @return Pointer to the duplicated string, or NULL if allocation fails.
+ *
+ * @see man strdup(3)
+ */
 char	*ft_strdup(const char *s1)
 {
 	size_t	len;

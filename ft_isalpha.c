@@ -22,6 +22,13 @@ static int	ft_islower(int c)
 	return (c >= 'a' && c <= 'z');
 }
 
+/**
+ * @brief Checks for an alphabetic character.
+ * @param c The character to check.
+ * @return Non-zero if c is alphabetic, 0 otherwise.
+ *
+ * @see man isalpha(3)
+ */
 int	ft_isalpha(int c)
 {
 	if (ft_isupper(c) || ft_islower(c))

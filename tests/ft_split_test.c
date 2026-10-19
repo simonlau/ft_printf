@@ -1,8 +1,8 @@
 #include "libft.h"
-#include "registry.h"
-#include "theft.h"
-#include <stdio.h>
+#include "tst.h"
+#include <stdlib.h>
 #include <string.h>
+#include "test.h"
 
 static void	free_result(char **result)
 {
@@ -19,84 +19,120 @@ static void	free_result(char **result)
 	free(result);
 }
 
-static enum theft_trial_res	prop_set_then_check(struct theft *t, void *arg1,
-		void *arg2, void *arg3)
-{
-	const char	*s1;
-	const char	*s2;
-	char		c;
-	char		**result;
-	size_t		len;
-	char		*combined;
-	const char	*expected[3];
-	int			i;
-	int			oneNullButNotOther;
+tstsuite("ft_split") {
+    tstcase("property cc s1 cc s2 cc splits into [s1, s2, NULL]") {
+        char	*s1;
+        char	*s2;
+        char	c;
+        char	**result;
+        char	*combined;
+        size_t	len;
+        int		i;
+        int		ok;
 
-	(void)t;
-	s1 = (const char *)arg1;
-	s2 = (const char *)arg2;
-	c = *(const char *)arg3;
-	expected[0] = s1;
-	expected[1] = s2;
-	expected[2] = NULL;
-	if (strchr(s1, c) != NULL || strchr(s2, c) != NULL)
-		return (THEFT_TRIAL_SKIP);
-	if (*s1 == NULL_CHAR || *s2 == NULL_CHAR)
-		return (THEFT_TRIAL_SKIP);
-	len = 2 + strlen(s1) + 2 + strlen(s2) + 2 + NULL_CHAR_ALLOC;
-	combined = malloc(len * sizeof(*combined));
-	if (combined == NULL)
-	{
-		return (THEFT_TRIAL_SKIP);
-	}
-	snprintf(combined, len, "%c%c%s%c%c%s%c%c", c, c, s1, c, c, s2, c, c);
-	result = ft_split(combined, c);
-	if (result == NULL)
-	{
-		free(combined);
-		return (THEFT_TRIAL_FAIL);
-	}
-	i = 0;
-	while (i < 3)
-	{
-		oneNullButNotOther = (expected[i] == NULL) != (result[i] == NULL);
-		if (oneNullButNotOther || (expected[i] != NULL && strcmp(expected[i],
-					result[i]) != 0))
-		{
-			free_result(result);
-			free(combined);
-			return (THEFT_TRIAL_FAIL);
-		}
-		i++;
-	}
-	free_result(result);
-	free(combined);
-	return (THEFT_TRIAL_PASS);
+        srand(SEED);
+        for (i = 0; i < TRIALS; i++) {
+            s1 = make_rand_str();
+            s2 = make_rand_str();
+            if (s1 == NULL || s2 == NULL)
+            {
+                free(s1);
+                free(s2);
+                continue ;
+            }
+            if (*s1 == '\0' || *s2 == '\0')
+            {
+                free(s1);
+                free(s2);
+                continue ;
+            }
+            c = (unsigned char)rand();
+            if (strchr(s1, c) != NULL || strchr(s2, c) != NULL)
+            {
+                free(s1);
+                free(s2);
+                continue ;
+            }
+            len = 6 + strlen(s1) + strlen(s2) + 1;
+            combined = malloc(len);
+            if (combined == NULL)
+            {
+                free(s1);
+                free(s2);
+                continue ;
+            }
+            snprintf(combined, len, "%c%c%s%c%c%s%c%c",
+                     c, c, s1, c, c, s2, c, c);
+            result = ft_split(combined, c);
+            ok = 1;
+            if (result == NULL)
+                ok = 0;
+            else if (strcmp(result[0], s1) != 0
+                     || strcmp(result[1], s2) != 0
+                     || result[2] != NULL)
+                ok = 0;
+            tstexpect(ok,
+                "ft_split(%c%c%s%c%c%s%c%c, %c) != {%s, %s, NULL}",
+                c, c, s1, c, c, s2, c, c, c, s1, s2);
+            if (result != NULL)
+                free_result(result);
+            free(combined);
+            free(s1);
+            free(s2);
+        }
+    }
+
+    tstcase("edge degenerate inputs") {
+        const char	*inputs[] = {
+            "",            /* empty string -> {NULL} */
+            "cccc",        /* delimiter only -> {NULL} */
+            "c",           /* single delimiter -> {NULL} */
+            "a",           /* single segment, no delimiter -> {"a", NULL} */
+            "aaaa",        /* single segment, no delimiter (multi) -> {"aaaa", NULL} */
+            "cac",         /* segment surrounded -> {"a", NULL} */
+            "cacccb",      /* two segments, uneven delimiters -> {"a", "b", NULL} */
+        };
+        const char	*expected[][3] = {
+            { NULL },
+            { NULL },
+            { NULL },
+            { "a", NULL },
+            { "aaaa", NULL },
+            { "a", NULL },
+            { "a", "b", NULL },
+        };
+        char	c = 'c';
+        size_t	n = sizeof(inputs) / sizeof(inputs[0]);
+
+        for (size_t i = 0; i < n; i++) {
+            char	**result = ft_split(inputs[i], c);
+            int		seg_count = 0;
+            int		ok = 1;
+
+            if (result != NULL)
+                while (result[seg_count] != NULL)
+                    seg_count++;
+            if (result == NULL)
+                ok = 0;
+            else if (result[seg_count] != NULL)
+                ok = 0;
+            else
+            {
+                for (int j = 0; expected[i][j] != NULL; j++)
+                {
+                    if (result[j] == NULL || strcmp(result[j], expected[i][j]) != 0)
+                    {
+                        ok = 0;
+                        break ;
+                    }
+                }
+                if (expected[i][0] == NULL && seg_count > 0)
+                    ok = 0;
+            }
+            tstexpect(ok,
+                "ft_split(\"%s\", 'c') = %p not as expected (%d segments)", inputs[i], (void *)result, seg_count);
+            if (result != NULL)
+                free_result(result);
+        }
+    }
 }
-
-int	ft_split_test(void)
-{
-	enum theft_run_res	res;
-
-	struct theft_run_config cfg = {
-		.prop3 = prop_set_then_check,
-		.name = __FILE__,
-		.trials = 1000,
-		.type_info = {theft_get_builtin_type_info(THEFT_BUILTIN_char_ARRAY),
-			theft_get_builtin_type_info(THEFT_BUILTIN_char_ARRAY),
-			theft_get_builtin_type_info(THEFT_BUILTIN_uint8_t)},
-	};
-	res = theft_run(&cfg);
-	if (res == THEFT_RUN_PASS)
-		return (EXIT_SUCCESS);
-	return (EXIT_FAILURE);
-}
-
-REGISTER_TEST(1, ft_split_test)
-
-#ifndef ALL_TESTS
-int	main(void)
-{
-	return (ft_split_test());
-}
-#endif

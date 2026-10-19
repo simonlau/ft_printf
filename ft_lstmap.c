@@ -12,6 +12,16 @@
 
 #include "libft.h"
 
+/**
+ * @brief Iterates through lst, applies f to each node's
+ * content, and creates a new list.
+ * @param lst Address of a pointer to a node.
+ * @param f Address of the function applied to each node's content.
+ * @param del Address of the function used to delete a node's content if needed.
+ * @return The new list. NULL if allocation fails.
+ *
+ * @see raw/project-overview/libft-subject.md
+ */
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *))
 {
 	t_list	*result;

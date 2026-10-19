@@ -13,6 +13,14 @@
 #include "libft.h"
 #include <unistd.h>
 
+/**
+ * @brief Outputs the string s to the given file descriptor followed
+ * by a newline.
+ * @param s The string to output.
+ * @param fd The file descriptor on which to write.
+ *
+ * @see raw/project-overview/libft-subject.md
+ */
 void	ft_putendl_fd(char *s, int fd)
 {
 	if (s == NULL)

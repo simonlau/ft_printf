@@ -1,82 +1,26 @@
 #include "libft.h"
-#include "registry.h"
-#include "theft.h"
+#include "tst.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include "test.h"
 
-static enum theft_trial_res	prop_oracle(struct theft *t, void *arg)
+static void	putchar_wrapper(void *payload, int fd)
 {
-	char	c;
-	int		fds[2];
-	char	out;
-	char	extra[16];
-	size_t	total;
-	ssize_t	r;
-	size_t	more;
-
-	(void)t;
-	c = *(const char *)arg;
-	if (pipe(fds) != 0)
-		return (THEFT_TRIAL_SKIP);
-	ft_putchar_fd(c, fds[1]);
-	close(fds[1]);
-	total = 0;
-	while (total < 1)
-	{
-		r = read(fds[0], &out + total, 1 - total);
-		if (r == 0)
-			break ;
-		if (r < 0)
-		{
-			close(fds[0]);
-			return (THEFT_TRIAL_SKIP);
-		}
-		total += (size_t)r;
-	}
-	more = 0;
-	while (1)
-	{
-		r = read(fds[0], extra, sizeof(extra));
-		if (r == 0)
-			break ;
-		if (r < 0)
-		{
-			close(fds[0]);
-			return (THEFT_TRIAL_SKIP);
-		}
-		more += (size_t)r;
-	}
-	close(fds[0]);
-	if (total != 1 || more != 0)
-		return (THEFT_TRIAL_FAIL);
-	if (memcmp(&out, &c, 1) != EQUAL)
-		return (THEFT_TRIAL_FAIL);
-	return (THEFT_TRIAL_PASS);
+	ft_putchar_fd(*(char *)payload, fd);
 }
 
-int	ft_putchar_fd_test(void)
-{
-	enum theft_run_res	res;
+tstsuite("ft_putchar_fd") {
+    tstcase("property writes exactly one byte to the fd") {
+		char	c;
+		int		i;
 
-	struct theft_run_config cfg = {
-		.prop1 = prop_oracle,
-		.name = __FILE__,
-		.trials = 1000,
-		.type_info = {theft_get_builtin_type_info(THEFT_BUILTIN_uint8_t)},
-	};
-	res = theft_run(&cfg);
-	if (res == THEFT_RUN_PASS)
-		return (EXIT_SUCCESS);
-	return (EXIT_FAILURE);
+        srand(SEED);
+        for (i = 0; i < TRIALS; i++) {
+            c = (char)rand();
+            tstexpect(assert_fd_output(putchar_wrapper, &c, &c, 1),
+                "ft_putchar_fd(%d) did not write expected byte", c);
+        }
+    }
 }
-
-REGISTER_TEST(1, ft_putchar_fd_test)
-
-#ifndef ALL_TESTS
-int	main(void)
-{
-	return (ft_putchar_fd_test());
-}
-#endif

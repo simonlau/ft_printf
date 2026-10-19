@@ -12,6 +12,14 @@
 
 #include "libft.h"
 
+/**
+ * @brief Checks whether c is a 7-bit unsigned char value that
+ * fits in the ASCII set.
+ * @param c The character to check.
+ * @return Non-zero if c is ASCII, 0 otherwise.
+ *
+ * @see man isascii(3)
+ */
 int	ft_isascii(int c)
 {
 	if (c >= 0 && c <= 0177)

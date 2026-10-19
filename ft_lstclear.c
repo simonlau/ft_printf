@@ -13,6 +13,14 @@
 #include "libft.h"
 #include <stdlib.h>
 
+/**
+ * @brief Deletes and frees the given node and every successor
+ * using del and free(). Sets *lst to NULL.
+ * @param lst Address of a pointer to a node.
+ * @param del Address of the function used to delete the content of the node.
+ *
+ * @see raw/project-overview/libft-subject.md
+ */
 void	ft_lstclear(t_list **lst, void (*del)(void *))
 {
 	t_list	*head;

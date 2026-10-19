@@ -12,6 +12,16 @@
 
 #include "libft.h"
 
+/**
+ * @brief Locates the first occurrence of needle in haystack,
+ * searching at most len characters.
+ * @param haystack The string to search in.
+ * @param needle The substring to search for.
+ * @param len Maximum number of characters to search.
+ * @return Pointer to the first occurrence of needle, or NULL if not found.
+ *
+ * @see man strnstr(3)
+ */
 char	*ft_strnstr(const char *haystack, const char *needle, size_t len)
 {
 	size_t	i;
