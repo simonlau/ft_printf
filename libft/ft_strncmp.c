@@ -12,6 +12,15 @@
 
 #include "libft.h"
 
+/**
+ * @brief Compares at most n bytes of strings s1 and s2.
+ * @param s1 First string to compare.
+ * @param s2 Second string to compare.
+ * @param n Maximum number of bytes to compare.
+ * @return Zero if equal, a non-zero difference otherwise.
+ *
+ * @see man strncmp(3)
+ */
 int	ft_strncmp(const char *s1, const char *s2, size_t n)
 {
 	size_t			i;

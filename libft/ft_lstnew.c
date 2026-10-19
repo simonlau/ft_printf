@@ -13,6 +13,14 @@
 #include "libft.h"
 #include <stdlib.h>
 
+/**
+ * @brief Allocates and returns a new node. content initialized
+ * with the parameter, next set to NULL.
+ * @param content The content to store in the new node.
+ * @return A pointer to the new node.
+ *
+ * @see raw/project-overview/libft-subject.md
+ */
 t_list	*ft_lstnew(void *content)
 {
 	t_list	*node_ptr;

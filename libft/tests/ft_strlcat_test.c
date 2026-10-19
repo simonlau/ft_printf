@@ -1,78 +1,81 @@
 #include "libft.h"
-#include "registry.h"
-#include "theft.h"
-#include <stdio.h>
+#include "test.h"
+#include "tst.h"
+#include <stdlib.h>
 #include <string.h>
 #if defined(__GLIBC__)
 # include <bsd/string.h>
 #endif
 
-static enum theft_trial_res	prop_oracle(struct theft *t, void *arg1, void *arg2,
-		void *arg3)
+tstsuite("ft_strlcat")
 {
-	char		*dst;
-	char		*src;
-	char		*actual;
-	char		*expected;
-	size_t		result;
-	uint16_t	num;
-	size_t		answer;
-	int			dst_len;
+	char	*dst;
+	char	*src;
+	size_t	num;
+	char	*actual;
+	char	*expected;
+	size_t	result;
+	size_t	expected_result;
+	int		i;
 
-	(void)t;
-	dst = (char *)arg1;
-	src = (char *)arg2;
-	num = *(uint16_t *)arg3;
-	dst_len = strlen(dst);
-	dst_len = dst_len > 0 ? dst_len + 1 : 0;
-	actual = calloc(num, sizeof(*actual));
-	if (actual == NULL)
+	srand(SEED);
+	tstcase("property test matches strlcat oracle")
 	{
-		return (THEFT_TRIAL_SKIP);
+		for (i = 0; i < TRIALS; i++)
+		{
+			dst = make_rand_str();
+			src = make_rand_str();
+			num = rand() % 32 + 1;
+			actual = calloc(num, sizeof(*actual));
+			if (actual == NULL)
+			{
+				free(dst);
+				free(src);
+				continue;
+			}
+			snprintf(actual, num, "%s", dst);
+			expected = calloc(num, sizeof(*expected));
+			if (expected == NULL)
+			{
+				free(actual);
+				free(dst);
+				free(src);
+				continue;
+			}
+			snprintf(expected, num, "%s", dst);
+			result = ft_strlcat(actual, src, num);
+			expected_result = strlcat(expected, src, num);
+			tstexpect(result == expected_result && memcmp(actual, expected, num) == 0,
+				"ft_strlcat mismatch for num=%zu", num);
+			free(actual);
+			free(expected);
+			free(dst);
+			free(src);
+		}
 	}
-	snprintf(actual, num, "%s", dst);
-	expected = calloc(num, sizeof(*expected));
-	if (expected == NULL)
+	tstcase("check special cases")
 	{
-		return (THEFT_TRIAL_SKIP);
+		const char *tstdata[] = {"", "x", "abc", "hello world"};
+		tstsection("Check bounds")
+		{
+			num = rand() % 32 + 1;
+			actual = calloc(num, sizeof(*actual));
+			if (actual == NULL)
+				continue;
+			snprintf(actual, num, "%s", tstcurdata);
+			expected = calloc(num, sizeof(*expected));
+			if (expected == NULL)
+			{
+				free(actual);
+				continue;
+			}
+			snprintf(expected, num, "%s", tstcurdata);
+			result = ft_strlcat(actual, tstcurdata, num);
+			expected_result = strlcat(expected, tstcurdata, num);
+			tstexpect(result == expected_result && memcmp(actual, expected, num) == 0,
+				"ft_strlcat(%s, %zu)", tstcurdata, num);
+			free(actual);
+			free(expected);
+		}
 	}
-	snprintf(expected, num, "%s", dst);
-	result = ft_strlcat(actual, src, num);
-	answer = strlcat(expected, src, num);
-	if (result == answer && memcmp(actual, expected, num) == 0)
-	{
-		free(expected);
-		free(actual);
-		return (THEFT_TRIAL_PASS);
-	}
-	free(expected);
-	free(actual);
-	return (THEFT_TRIAL_FAIL);
 }
-
-int	ft_strlcat_test(void)
-{
-	enum theft_run_res	res;
-
-	struct theft_run_config cfg = {
-		.prop3 = prop_oracle,
-		.name = __FILE__,
-		.trials = 1000,
-		.type_info = {theft_get_builtin_type_info(THEFT_BUILTIN_char_ARRAY),
-			theft_get_builtin_type_info(THEFT_BUILTIN_char_ARRAY),
-			theft_get_builtin_type_info(THEFT_BUILTIN_uint16_t)},
-	};
-	res = theft_run(&cfg);
-	if (res == THEFT_RUN_PASS)
-		return (EXIT_SUCCESS);
-	return (EXIT_FAILURE);
-}
-
-REGISTER_TEST(1, ft_strlcat_test)
-
-#ifndef ALL_TESTS
-int	main(void)
-{
-	return (ft_strlcat_test());
-}
-#endif

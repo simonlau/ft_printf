@@ -13,6 +13,15 @@
 #include "libft.h"
 #include <stdlib.h>
 
+/**
+ * @brief Allocates and returns a new string which is the
+ * concatenation of s1 and s2.
+ * @param s1 The prefix string.
+ * @param s2 The suffix string.
+ * @return The new string. NULL if allocation fails.
+ *
+ * @see raw/project-overview/libft-subject.md
+ */
 char	*ft_strjoin(char const *s1, char const *s2)
 {
 	size_t	s1_len;

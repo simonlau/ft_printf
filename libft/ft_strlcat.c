@@ -24,6 +24,15 @@ static size_t	ft_strnlen(const char *str, size_t max)
 	return (i);
 }
 
+/**
+ * @brief Appends string src to the end of dst, null-terminating the result.
+ * @param dst Destination string.
+ * @param src Source string to append.
+ * @param dstsize The full size of the destination buffer.
+ * @return The length of the string it tried to create.
+ *
+ * @see man strlcat(3)
+ */
 size_t	ft_strlcat(char *dst, const char *src, size_t dstsize)
 {
 	size_t	dst_len;

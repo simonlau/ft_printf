@@ -94,6 +94,16 @@ static int	fill_split(char **arr, const char *str, char c)
 	return (TRUE);
 }
 
+/**
+ * @brief Allocates and returns an array of strings obtained by
+ * splitting s using c as delimiter.
+ * @param s The string to be split.
+ * @param c The delimiter character.
+ * @return The array of new strings. NULL if any allocation fails.
+ * The array is NULL-terminated.
+ *
+ * @see raw/project-overview/libft-subject.md
+ */
 char	**ft_split(const char *s, char c)
 {
 	char	**result;

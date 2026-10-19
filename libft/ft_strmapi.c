@@ -13,6 +13,16 @@
 #include "libft.h"
 #include <stdlib.h>
 
+/**
+ * @brief Applies the function f to each character of s,
+ * passing its index as first argument.
+ * @param s The string to iterate over.
+ * @param f The function to apply to each character.
+ * @return The string created from the successive applications of f.
+ * NULL if allocation fails.
+ *
+ * @see raw/project-overview/libft-subject.md
+ */
 char	*ft_strmapi(char const *s, char (*f)(unsigned int, char))
 {
 	size_t			len;

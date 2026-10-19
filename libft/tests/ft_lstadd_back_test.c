@@ -1,75 +1,58 @@
 #include "libft.h"
-#include "registry.h"
-#include "theft.h"
+#include "tst.h"
+#include <stdlib.h>
+#include <stdint.h>
+#include "test.h"
 
 static void	noop(void *content)
 {
 	(void)content;
-	return ;
 }
 
-static enum theft_trial_res	prop_lstadd_back(struct theft *t, void *arg1,
-		void *arg2, void *arg3)
+static int	lst_content_matches(t_list *head, int *expected, int count)
 {
-	char	*a;
-	char	*b;
-	char	*c;
-	t_list	*head;
+	int		i;
+	t_list	*cur;
 
-	(void)t;
-	a = (char *)arg1;
-	b = (char *)arg2;
-	c = (char *)arg3;
-	head = NULL;
-	if (ft_lstsize(head) != 0)
+	i = 0;
+	cur = head;
+	while (i < count && cur != NULL)
 	{
-		return (THEFT_TRIAL_FAIL);
+		if ((intptr_t)cur->content != (intptr_t)expected[i])
+			return (0);
+		cur = cur->next;
+		i++;
 	}
-	ft_lstadd_back(&head, ft_lstnew(a));
-	if (ft_lstsize(head) != 1)
-	{
-		ft_lstclear(&head, noop);
-		return (THEFT_TRIAL_FAIL);
-	}
-	ft_lstadd_back(&head, ft_lstnew(b));
-	if (ft_lstsize(head) != 2)
-	{
-		ft_lstclear(&head, noop);
-		return (THEFT_TRIAL_FAIL);
-	}
-	ft_lstadd_back(&head, ft_lstnew(c));
-	if (ft_lstsize(head) != 3)
-	{
-		ft_lstclear(&head, noop);
-		return (THEFT_TRIAL_FAIL);
-	}
-	ft_lstclear(&head, noop);
-	return (THEFT_TRIAL_PASS);
+	return (i == count && cur == NULL);
 }
 
-int	ft_lstadd_back_test(void)
-{
-	enum theft_run_res	res;
+tstsuite("ft_lstadd_back") {
+    tstcase("add_back appends and size increments") {
+        int		i;
+		int		val;
+		int		expected[3];
+		t_list	*head;
 
-	struct theft_run_config cfg = {
-		.prop3 = prop_lstadd_back,
-		.name = __FILE__,
-		.trials = 1000,
-		.type_info = {theft_get_builtin_type_info(THEFT_BUILTIN_char_ARRAY),
-			theft_get_builtin_type_info(THEFT_BUILTIN_char_ARRAY),
-			theft_get_builtin_type_info(THEFT_BUILTIN_char_ARRAY)},
-	};
-	res = theft_run(&cfg);
-	if (res != THEFT_RUN_PASS)
-		return (EXIT_FAILURE);
-	return (EXIT_SUCCESS);
+        srand(SEED);
+        for (i = 0; i < TRIALS; i++) {
+            head = NULL;
+            tstexpect(ft_lstsize(head) == 0, "ft_lstadd_back: empty list");
+            val = rand();
+            expected[0] = val;
+            ft_lstadd_back(&head, ft_lstnew((void *)(intptr_t)val));
+            tstexpect(ft_lstsize(head) == 1 && lst_content_matches(head, expected, 1),
+                     "ft_lstadd_back: one node");
+            val = rand();
+            expected[1] = val;
+            ft_lstadd_back(&head, ft_lstnew((void *)(intptr_t)val));
+            tstexpect(ft_lstsize(head) == 2 && lst_content_matches(head, expected, 2),
+                     "ft_lstadd_back: two nodes");
+            val = rand();
+            expected[2] = val;
+            ft_lstadd_back(&head, ft_lstnew((void *)(intptr_t)val));
+            tstexpect(ft_lstsize(head) == 3 && lst_content_matches(head, expected, 3),
+                     "ft_lstadd_back: three nodes");
+            ft_lstclear(&head, noop);
+        }
+    }
 }
-
-REGISTER_TEST(1, ft_lstadd_back_test)
-
-#ifndef ALL_TESTS
-int	main(void)
-{
-	return (ft_lstadd_back_test());
-}
-#endif

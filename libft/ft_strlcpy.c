@@ -12,6 +12,16 @@
 
 #include "libft.h"
 
+/**
+ * @brief Copies up to size - 1 characters from src to dst,
+ * null-terminating the result.
+ * @param dst Destination string.
+ * @param src Source string.
+ * @param size Size of the destination buffer.
+ * @return The length of src.
+ *
+ * @see man strlcpy(3)
+ */
 size_t	ft_strlcpy(char *dst, const char *src, size_t size)
 {
 	size_t	i;

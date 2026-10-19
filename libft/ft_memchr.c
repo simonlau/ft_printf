@@ -12,6 +12,15 @@
 
 #include "libft.h"
 
+/**
+ * @brief Scans the first n bytes of memory area s for the first instance of c.
+ * @param s Pointer to the memory area to search.
+ * @param c The byte to search for.
+ * @param n Number of bytes to be analyzed.
+ * @return Pointer to the matching byte, or NULL if not found.
+ *
+ * @see man memchr(3)
+ */
 void	*ft_memchr(const void *s, int c, size_t n)
 {
 	unsigned char	*pos;

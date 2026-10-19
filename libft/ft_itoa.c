@@ -56,6 +56,14 @@ static char	digit_to_char(int digit)
 	return (digit + '0');
 }
 
+/**
+ * @brief Allocates and returns a string representing the integer
+ * received as argument.
+ * @param n The integer to convert. Negative numbers are handled.
+ * @return The string representing the integer. NULL if allocation fails.
+ *
+ * @see raw/project-overview/libft-subject.md
+ */
 char	*ft_itoa(int n)
 {
 	char	*result;

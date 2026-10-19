@@ -77,10 +77,10 @@ make re        # fclean + all
 Per-function property tests (each `tests/ft_*_test.c` builds to `./ft_*_test` with ASan+UBSan):
 
 ```sh
-make clone-theft   # one-time: fetch theft test dependency
-make test          # build all per-function test binaries
-make run-tests     # build + run each test binary (ASAN_OPTIONS=allocator_may_return_null=1)
-./ft_split_test    # run a single test binary
+make clone-tst   # one-time: fetch tst test dependency
+make test        # build all per-function test binaries
+make run-tests   # build + run each test binary (ASAN_OPTIONS=allocator_may_return_null=1)
+./ft_split_test  # run a single test binary
 ```
 
 Consolidated runner:
@@ -101,7 +101,7 @@ make wipe      # fclean + remove docs tests raw wiki skills-lock.json (destructi
 
 Refer to [wiki](wiki/index.md)
 
-C Property Based Testing Library - [Theft](https://github.com/silentbicycle/theft)
+C Property Based Testing Library - [TST](https://github.com/rdentato/tst)
 
 ### Ai Usage
 

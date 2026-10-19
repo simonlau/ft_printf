@@ -1,55 +1,33 @@
 #include "libft.h"
-#include "registry.h"
-#include "theft.h"
+#include "tst.h"
+#include "test.h"
+#include <stdlib.h>
 #include <string.h>
 
-static enum theft_trial_res	prop_set_then_compare(struct theft *t, void *arg)
-{
-	char	*s;
-	int		len;
-	char	*expected;
-	char	*actual;
-
-	(void)t;
-	s = (char *)arg;
-	len = strlen(s);
-	actual = strdup(s);
-	expected = calloc(len, len * sizeof(*expected));
-	// bzero(expected, len);
-	// act
-	ft_bzero(actual, len);
-	if (memcmp(actual, expected, len) == 0)
-	{
-		free(actual);
-		free(expected);
-		return (THEFT_TRIAL_PASS);
-	}
-	free(actual);
-	free(expected);
-	return (THEFT_TRIAL_FAIL);
+tstsuite("ft_bzero") {
+    tstcase("property test matches calloc oracle") {
+        char *s;
+        int len;
+        char *expected;
+        char *actual;
+        
+        srand(SEED);
+        int i;
+        for (i = 0; i < TRIALS; i++) {
+            len = rand() % 64;
+            s = malloc(len + 1);
+            if (s == NULL) continue;
+            for (int j = 0; j < len; j++)
+                s[j] = (char)(rand() % 95 + 32);
+            s[len] = '\0';
+            actual = strdup(s);
+            expected = calloc(len, sizeof(*expected));
+            if (expected == NULL) { free(s); free(actual); continue; }
+            ft_bzero(actual, len);
+            tstexpect(memcmp(actual, expected, len) == 0, "ft_bzero mismatch for len=%d", len);
+            free(s);
+            free(actual);
+            free(expected);
+        }
+    }
 }
-
-int	ft_bzero_test(void)
-{
-	enum theft_run_res	res;
-
-	struct theft_run_config cfg = {
-		.prop1 = prop_set_then_compare,
-		.name = __FILE__,
-		.trials = 1000,
-		.type_info = {theft_get_builtin_type_info(THEFT_BUILTIN_char_ARRAY)},
-	};
-	res = theft_run(&cfg);
-	if (res == THEFT_RUN_PASS)
-		return (EXIT_SUCCESS);
-	return (EXIT_FAILURE);
-}
-
-REGISTER_TEST(1, ft_bzero_test)
-
-#ifndef ALL_TESTS
-int	main(void)
-{
-	return (ft_bzero_test());
-}
-#endif

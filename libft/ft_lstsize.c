@@ -12,6 +12,13 @@
 
 #include "libft.h"
 
+/**
+ * @brief Counts the number of nodes in the list.
+ * @param lst The beginning of the list.
+ * @return The length of the list.
+ *
+ * @see raw/project-overview/libft-subject.md
+ */
 unsigned int	ft_lstsize(t_list *lst)
 {
 	unsigned int	count;

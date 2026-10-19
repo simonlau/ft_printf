@@ -12,6 +12,14 @@
 
 #include "libft.h"
 
+/**
+ * @brief Erases the data in the n bytes of memory starting
+ * at s by writing zeros.
+ * @param s Pointer to the memory area to fill with zeros.
+ * @param n Number of bytes to be set to zero.
+ *
+ * @see man bzero(3)
+ */
 void	ft_bzero(void *s, size_t n)
 {
 	size_t	i;
